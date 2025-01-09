@@ -1,40 +1,50 @@
-import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
-import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
-import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-import static com.kms.katalon.core.testobject.ObjectRepository.findWindowsObject
-import com.kms.katalon.core.checkpoint.Checkpoint as Checkpoint
-import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile
-import com.kms.katalon.core.model.FailureHandling as FailureHandling
-import com.kms.katalon.core.testcase.TestCase as TestCase
-import com.kms.katalon.core.testdata.TestData as TestData
-import com.kms.katalon.core.testng.keyword.TestNGBuiltinKeywords as TestNGKW
+import com.kms.katalon.core.testobject.ConditionType as ConditionType
 import com.kms.katalon.core.testobject.TestObject as TestObject
-import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
-import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
-import internal.GlobalVariable as GlobalVariable
-import org.openqa.selenium.Keys as Keys
-import com.kms.katalon.core.util.KeywordUtil as KeywordUtil
 
+// Abre el navegador y navega a Wikipedia
 WebUI.openBrowser('')
+WebUI.navigateToUrl('https://es.m.wikipedia.org/wiki/Wikipedia:Portada')
 
-WebUI.maximizeWindow()
+// Crear un objeto dinámico para el botón de búsqueda basado en su clase inicial
+TestObject searchButton = new TestObject('dynamicSearchButton')
+searchButton.addProperty("class", ConditionType.EQUALS, "mw-ui-button main-top-mobileSearchButton skin-minerva-search-trigger")
 
-WebUI.callTestCase(findTestCase('Test Cases - Infini/Componentes reutilizables/1. Wait for page load'), [:], FailureHandling.STOP_ON_FAILURE)
+// Realizar clic en el botón de búsqueda para habilitar el campo
+WebUI.waitForElementClickable(searchButton, 10)
+WebUI.click(searchButton)
+WebUI.delay(2)
 
-WebUI.navigateToUrl(GlobalVariable.URL)
+// Crear un objeto dinámico para el campo de búsqueda basado en la clase visible después del clic
+TestObject searchInput = new TestObject('dynamicSearchInput')
+searchInput.addProperty("class", ConditionType.EQUALS, "search mf-icon-search")
 
-WebUI.callTestCase(findTestCase('Test Cases - Infini/Componentes reutilizables/1. Wait for page load'), [:], FailureHandling.STOP_ON_FAILURE)
+// Esperar a que el campo de texto esté visible y sea interactuable
+WebUI.waitForElementVisible(searchInput, 10)
 
-// Verifica si el boton de aceptar cookies esta presente
-if (WebUI.verifyElementPresent(findTestObject('Object Repository - Infini/01 - Hacer login/button_Aceptar_todas_las_cookies'), 
-    10, FailureHandling.OPTIONAL)) {
-    // Si el boton está presente, haz clic en él.
-    WebUI.click(findTestObject('Object Repository - Infini/01 - Hacer login/button_Aceptar_todas_las_cookies'))
+// Realizar el setText para introducir el término de búsqueda
+WebUI.setText(searchInput, "america")
+WebUI.delay(2)
 
-    WebUI.callTestCase(findTestCase('Test Cases - Infini/Componentes reutilizables/1. Wait for page load'), [:], FailureHandling.STOP_ON_FAILURE)
-}
+// Hacer clic en "American Horror Story"
+TestObject americanHorrorStory = findTestObject('Object Repository/Page_Wikipedia, la enciclopedia libre/h3_American Horror Story')
+WebUI.waitForElementClickable(americanHorrorStory, 10)
+WebUI.click(americanHorrorStory)
+WebUI.delay(2)
 
-WebUI.callTestCase(findTestCase('Test Cases - Infini/Diferentes Usuarios/1.1 - Usuario_Profesor1'), [:], FailureHandling.STOP_ON_FAILURE)
+// Navegar a las siguientes páginas
+WebUI.click(findTestObject('Object Repository/Page_American Horror Story - Wikipedia, la _c358be/a_Ryan Murphy'))
+WebUI.delay(2)
+
+WebUI.click(findTestObject('Object Repository/Page_Ryan Murphy - Wikipedia, la encicloped_f1a413/a_Pose'))
+WebUI.delay(2)
+
+WebUI.click(findTestObject('Object Repository/Page_Pose (serie de televisin) - Wikipedia,_161d5d/a_LGBTIQ'))
+WebUI.delay(2)
+
+WebUI.click(findTestObject('Object Repository/Page_LGBT - Wikipedia, la enciclopedia libre/a_idioma ingls'))
+WebUI.delay(2)
+
+// Cerrar el navegador
+WebUI.closeBrowser()
